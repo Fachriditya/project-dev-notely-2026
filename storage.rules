@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Safe seed for Story 1.1: deny everything until per-path Storage Rules
+    // are implemented in later stories (10 MB/file limit, workspace boundary).
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
