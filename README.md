@@ -4,8 +4,13 @@ Aplikasi mobile **personal + collaborative workspace** (Flutter + Firebase).
 Satu workspace untuk catatan, tugas, tabel, file, dan chat kelompok — memisahkan
 ruang **Personal** vs **Group** secara eksplisit.
 
-> Dokumentasi produk & desain: `PRD.md`, `design.md`.
-> Arsitektur & spec: `_bmad-output/`.
+> Dokumentasi lengkap ada di [`docs/`](./docs/):
+> - [`docs/PRD.md`](./docs/PRD.md) — Product Requirements Document
+> - [`docs/design.md`](./docs/design.md) — Design System & Wireframes
+> - [`docs/ai-features.md`](./docs/ai-features.md) — AI Features Documentation
+> - [`docs/README.md`](./docs/README.md) — Panduan setup & development
+
+---
 
 ## Prasyarat
 
@@ -21,50 +26,22 @@ ruang **Personal** vs **Group** secara eksplisit.
 ## Setup pertama kali
 
 ```bash
-# 1. Aktifkan dependency
 flutter pub get
-
-# 2. (WAJIB) Generate Firebase client options untuk project nyata
-#    Saat ini lib/firebase_options_{dev,prod}.dart adalah STUB placeholder.
-#    Setelah project Firebase `notely-dev` dan `notely-prod` tersedia:
-dart pub global activate flutterfire_cli
-flutterfire configure --project=notely-dev --platforms=android,ios --out=lib/firebase_options_dev.dart
-flutterfire configure --project=notely-prod --platforms=android,ios --out=lib/firebase_options_prod.dart
-
-# 3. Login Firebase & set project alias (opsional, untuk deploy)
-firebase login
-firebase use notely-dev
 ```
+
+Untuk konfigurasi Firebase lengkap, lihat [`docs/README.md`](./docs/README.md).
 
 ## Menjalankan aplikasi
 
 ```bash
-# Dev flavor (Firebase Emulator Suite — Firestore 8080, Auth 9099, Storage 9199, Functions 5001)
+# Dev flavor (Firebase Emulator Suite)
 flutter run -t lib/app/main.dart --dart-define=FLAVOR=dev
 
-# Prod flavor (project notely-prod)
+# Prod flavor
 flutter run -t lib/app/main.dart --dart-define=FLAVOR=prod
 ```
 
-> Entrypoint ada di `lib/app/main.dart` (bukan `lib/main.dart`), sehingga
-> perintah `flutter run` memakai `-t lib/app/main.dart`.
-
-### Emulator Suite (dev)
-
-```bash
-# Jalankan emulator dari root proyek (lihat firebase.json)
-firebase emulators:start
-```
-
-Host emulator dari app: `10.0.2.2` (Android emulator) — overridable via
-`--dart-define=EMULATOR_HOST=localhost` untuk desktop/web.
-
-## Verifikasi
-
-```bash
-flutter analyze
-flutter test
-```
+> Entrypoint ada di `lib/app/main.dart`.
 
 ## Struktur (feature-first, 3 layer)
 
@@ -73,17 +50,19 @@ lib/
   app/            # composition root: main, app, bootstrap, router, theme, di, env
   core/           # shared: errors, widgets, utils, network
   features/       # satu folder per fitur: <feature>/{presentation,domain,data}
-  firebase_options_dev.dart
-  firebase_options_prod.dart
 ```
 
-Arsitektur mengikuti `ARCHITECTURE-SPINE.md` (AD-1…AD-10):
-`presentation → domain ← data`, Firestore sebagai single source of truth, akses
+Arsitektur mengikuti `ARCHITECTURE-SPINE.md` (AD-1..AD-10):
+`presentation -> domain <- data`, Firestore sebagai single source of truth, akses
 Firestore hanya lewat repository, dan **tanpa** `allow read, write: if true`.
 
-## Catatan keamanan
+## Verifikasi
 
-- Gemini API key & OAuth secret/refresh token **hanya** di Cloud Functions
-  (Secret Manager) — tidak pernah di client.
-- File `firebase_options_*.dart` berisi konfigurasi client-safe (bukan rahasia),
-  tetapi nilai saat ini adalah placeholder dan harus di-regenerate sebelum dipakai.
+```bash
+flutter analyze
+flutter test
+```
+
+---
+
+> Repo: https://github.com/Fachriditya/project-dev-notely-2026
